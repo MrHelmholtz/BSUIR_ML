@@ -1,3 +1,5 @@
+import random
+
 import pandas as pd
 import numpy as np
 from pandas import isnull
@@ -102,15 +104,18 @@ def get_probability_of_survival(person):
                              [(data['Age'] >= age - 14.526497) & (data['Age'] <= age + 14.526497)]
                              [(data['SibSp'] >= sib_sp - 1.102743) & (data['Parch'] <= sib_sp + 1.102743)]
                              [(data['Parch'] >= par_ch - 1) & (data['Parch'] <= par_ch + 1)]
-                             # [(data['Parch'] >= par_ch - 1) & (data['Parch'] <= par_ch + 1)]
-                             # [(data['Fare'] >= fare - 49.693429) & (data['Fare'] <= fare + 49.693429)]
-                             # [(data['Embarked'] == emb)]
+                             [(data['Parch'] >= par_ch - 1) & (data['Parch'] <= par_ch + 1)]
+                             [(data['Fare'] >= fare - 49.693429) & (data['Fare'] <= fare + 49.693429)]
+                             [(data['Embarked'] == emb)]
                              .mean())
 
       if isnull(chan):
             return 0
+      elif chan == 0.5:
+            return chan + np.random.normal(0, 0.3)
       else:
             return chan
+
 
 
 # pers_class = 3
@@ -150,12 +155,15 @@ for x in range(len(test)):
             unknown.append(x)
       elif isnull(chances):
             nones.append(x)
+      # res.append([test.iloc[x,0], 1]) if chances > 0.5 else res.append([test.iloc[x,0], 0]) if chances < 0.5 else res.append(-1.0)
+      if chances == 0.5:
+            chances = chances + random.gauss(0,0.1)
       res.append([test.iloc[x,0], 1]) if chances > 0.5 else res.append([test.iloc[x,0], 0]) if chances < 0.5 else res.append(-1.0)
 
-# print(sum(unknown))
-# print(sum(nones))
-# print(sum(res[res == -1]))
-
+print(sum(unknown))
+print(sum(nones))
+print(sum(res[res == -1]))
+print(unknown)
 # res = np.array(res)
 # answer = pd.DataFrame(res, columns=['PassengerId', 'Survived'])
 # answer = answer.to_csv()
