@@ -152,9 +152,9 @@ for x in range(len(test)):
             nones.append(x)
       res.append([test.iloc[x,0], 1]) if chances > 0.5 else res.append([test.iloc[x,0], 0]) if chances < 0.5 else res.append(-1.0)
 
-print(sum(unknown))
-print(sum(nones))
-print(sum(res[res == -1]))
+# print(sum(unknown))
+# print(sum(nones))
+# print(sum(res[res == -1]))
 
 # res = np.array(res)
 # answer = pd.DataFrame(res, columns=['PassengerId', 'Survived'])
@@ -164,11 +164,11 @@ print(sum(res[res == -1]))
 # print(examp)
 # print(answer)
 
-# answer = [['PassengerId', 'Survived']] + res
-# file_path = "C:\\Users\\Lenovo\\PycharmProjects\\PythonProject\\BSUIR\\BSUIR_ML\\answer.csv"
-#
-# f = open(file_path, "w", newline="")
-# writer = csv.writer(f)
-# for row in answer:
-#       writer.writerow(row)
-# f.close()
+answer = [['PassengerId', 'Survived']] + res
+file_path = "C:\\Users\\Lenovo\\PycharmProjects\\PythonProject\\BSUIR\\BSUIR_ML\\answer.csv"
+
+f = open(file_path, "w", newline="")
+writer = csv.writer(f)
+for row in answer:
+      writer.writerow(row)
+f.close()
