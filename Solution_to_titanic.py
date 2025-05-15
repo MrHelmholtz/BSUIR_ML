@@ -104,15 +104,49 @@ def get_probability_of_survival(person):
                              [(data['Age'] >= age - 14.526497) & (data['Age'] <= age + 14.526497)]
                              [(data['SibSp'] >= sib_sp - 1.102743) & (data['Parch'] <= sib_sp + 1.102743)]
                              [(data['Parch'] >= par_ch - 1) & (data['Parch'] <= par_ch + 1)]
-                             [(data['Parch'] >= par_ch - 1) & (data['Parch'] <= par_ch + 1)]
+                             # [(data['Parch'] >= par_ch - 1) & (data['Parch'] <= par_ch + 1)]
                              [(data['Fare'] >= fare - 49.693429) & (data['Fare'] <= fare + 49.693429)]
                              [(data['Embarked'] == emb)]
                              .mean())
 
       if isnull(chan):
-            return 0
-      elif chan == 0.5:
-            return chan + np.random.normal(0, 0.3)
+            chan = (data.iloc[:, 1][(data['Personclass'] >= pers_class - 1) & (data['Personclass'] <= pers_class + 1)]
+                    [(data['Sex'] == sex)]
+                    [(data['Age'] >= age - 14.526497) & (data['Age'] <= age + 14.526497)]
+                    [(data['SibSp'] >= sib_sp - 1.102743) & (data['Parch'] <= sib_sp + 1.102743)]
+                    [(data['Parch'] >= par_ch - 1) & (data['Parch'] <= par_ch + 1)]
+                    [(data['Parch'] >= par_ch - 1) & (data['Parch'] <= par_ch + 1)]
+                    [(data['Fare'] >= fare - 49.693429) & (data['Fare'] <= fare + 49.693429)]
+                    # [(data['Embarked'] == emb)]
+                    .mean())
+            if isnull(chan):
+                  chan = (data.iloc[:, 1][
+                                (data['Personclass'] >= pers_class - 1) & (data['Personclass'] <= pers_class + 1)]
+                          [(data['Sex'] == sex)]
+                          [(data['Age'] >= age - 14.526497) & (data['Age'] <= age + 14.526497)]
+                          [(data['SibSp'] >= sib_sp - 1.102743) & (data['Parch'] <= sib_sp + 1.102743)]
+                          [(data['Parch'] >= par_ch - 1) & (data['Parch'] <= par_ch + 1)]
+                          [(data['Parch'] >= par_ch - 1) & (data['Parch'] <= par_ch + 1)]
+                          # [(data['Fare'] >= fare - 49.693429) & (data['Fare'] <= fare + 49.693429)]
+                          # [(data['Embarked'] == emb)]
+                          .mean())
+                  if isnull(chan):
+                        chan = (data.iloc[:, 1][
+                                      (data['Personclass'] >= pers_class - 1) & (data['Personclass'] <= pers_class + 1)]
+                                [(data['Sex'] == sex)]
+                                [(data['Age'] >= age - 14.526497) & (data['Age'] <= age + 14.526497)]
+                                [(data['SibSp'] >= sib_sp - 1.102743) & (data['Parch'] <= sib_sp + 1.102743)]
+                                [(data['Parch'] >= par_ch - 1) & (data['Parch'] <= par_ch + 1)]
+                                # [(data['Parch'] >= par_ch - 1) & (data['Parch'] <= par_ch + 1)]
+                                # [(data['Fare'] >= fare - 49.693429) & (data['Fare'] <= fare + 49.693429)]
+                                # [(data['Embarked'] == emb)]
+                                .mean())
+                  return chan
+
+            else :
+                  return chan
+      # elif chan == 0.5:
+      #       return chan + np.random.normal(0, 0.3)
       else:
             return chan
 
@@ -156,14 +190,15 @@ for x in range(len(test)):
       elif isnull(chances):
             nones.append(x)
       # res.append([test.iloc[x,0], 1]) if chances > 0.5 else res.append([test.iloc[x,0], 0]) if chances < 0.5 else res.append(-1.0)
-      if chances == 0.5:
-            chances = chances + random.gauss(0,0.1)
+      # if chances == 0.5:
+      #       chances = chances + random.gauss(0,0.1)
       res.append([test.iloc[x,0], 1]) if chances > 0.5 else res.append([test.iloc[x,0], 0]) if chances < 0.5 else res.append(-1.0)
+      # res.append(1) if chances > 0.5 else res.append( 0) if chances < 0.5 else res.append(-1.0)
 
-print(sum(unknown))
-print(sum(nones))
-print(sum(res[res == -1]))
-print(unknown)
+print((unknown))
+print((nones))
+# print(sum([res[i] == -1 for i in range(len(res))]))
+print(res)
 # res = np.array(res)
 # answer = pd.DataFrame(res, columns=['PassengerId', 'Survived'])
 # answer = answer.to_csv()
@@ -172,11 +207,11 @@ print(unknown)
 # print(examp)
 # print(answer)
 
-answer = [['PassengerId', 'Survived']] + res
-file_path = "C:\\Users\\Lenovo\\PycharmProjects\\PythonProject\\BSUIR\\BSUIR_ML\\answer.csv"
-
-f = open(file_path, "w", newline="")
-writer = csv.writer(f)
-for row in answer:
-      writer.writerow(row)
-f.close()
+# answer = [['PassengerId', 'Survived']] + res
+# file_path = "C:\\Users\\Lenovo\\PycharmProjects\\PythonProject\\BSUIR\\BSUIR_ML\\answer.csv"
+#
+# f = open(file_path, "w", newline="")
+# writer = csv.writer(f)
+# for row in answer:
+#       writer.writerow(row)
+# f.close()
