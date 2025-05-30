@@ -86,7 +86,6 @@ def get_probability_of_survival(person):
 
       pers_class = person.values[ilabels[0]]
       sex = person.values[ilabels[1]]
-      # if person.values[ilabels[2]] is None:
       if isnull(person.values[ilabels[2]]):
             age = get_new_median_data(ilabels[2]+1)
       else:
@@ -99,11 +98,11 @@ def get_probability_of_survival(person):
       else:
             emb = person.values[ilabels[6]]
 
-      chan = (data.iloc[:, 1][(data['Personclass'] >= pers_class - 1) & (data['Personclass'] <= pers_class + 1)]
+      chan = (data.iloc[:, 1][(data['Personclass'] >= pers_class -1) & (data['Personclass'] <= pers_class +1)]
                              [(data['Sex'] == sex)]
                              [(data['Age'] >= age - 14.526497) & (data['Age'] <= age + 14.526497)]
                              [(data['SibSp'] >= sib_sp - 1.102743) & (data['Parch'] <= sib_sp + 1.102743)]
-                             [(data['Parch'] >= par_ch - 1) & (data['Parch'] <= par_ch + 1)]
+                             [(data['Parch'] >= par_ch-2 ) & (data['Parch'] <= par_ch +2)]
                              [(data['Fare'] >= fare - 49.693429) & (data['Fare'] <= fare + 49.693429)]
                              [(data['Embarked'] == emb)]
                              .mean())
