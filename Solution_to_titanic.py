@@ -107,6 +107,8 @@ def get_probability_of_survival(person):
                              [(data['Embarked'] == emb)]
                              .mean())
 
+
+
       # if isnull(chan):
       #       chan = (data.iloc[:, 1][(data['Personclass'] >= pers_class - 1) & (data['Personclass'] <= pers_class + 1)]
       #               [(data['Sex'] == sex)]
@@ -148,8 +150,34 @@ def get_probability_of_survival(person):
       # else:
       return chan
 
+def ro(person, data_person):
+      diff = 1
+      crw = 10
+      class_ro = np.abs(person.values[columns_used_in_test[0]] - data_person.values[columns_used_in_test[0+diff]])
+      srw = 100
+      sex_ro = np.array([person.values[columns_used_in_test[1]] == data_person.values[columns_used_in_test[1+diff]]])
+      arw = 10
+      age_ro = np.abs(person.values[columns_used_in_test[2]] - data_person.values[columns_used_in_test[2+diff]])
+      sbsprw = 2
+      sb_sp_ro = np.abs(person.values[columns_used_in_test[3]] - data_person.values[columns_used_in_test[3+diff]])
+      parchrw = 2
+      par_ch_ro = np.abs(person.values[columns_used_in_test[4]] - data_person.values[columns_used_in_test[4+diff]])
+      frw = 0.1
+      fare_ro = np.abs(person.values[columns_used_in_test[5]] - data_person.values[columns_used_in_test[5+diff]])
+      erw = 0.1
+      emb_ro = np.array([person.values[columns_used_in_test[6]] == data_person.values[columns_used_in_test[6+diff]]])
+      total_ro = (class_ro * crw + sex_ro * srw + age_ro * arw + sb_sp_ro * sbsprw + par_ch_ro * parchrw + fare_ro * frw
+                  + emb_ro * erw)
+      return total_ro
 
+def K_gauss(r):
+      return 1/(np.sqrt(np.pi * 2)) * np.exp(-1 *(r ** 2)/2)
 
+def K_triang(r):
+      return  np.abs( 1 - r) * np.array([np.abs(r) <= 1])
+
+def K_rectan(r):
+      return np.array([np.abs(r) <= 1])
 # pers_class = 3
 # sex = 'male'
 # age = 40
