@@ -153,18 +153,18 @@ def get_probability_of_survival(person):
 def ro(person, data_person):
       diff = 1
       crw = 25
-      class_ro = np.abs(person.values[columns_used_in_test[0]] - data_person.values[columns_used_in_train[0+diff]])
+      class_ro = np.abs(person.values[columns_used_in_test[0]] - data_person.values[columns_used_in_train[0 + diff]])
       srw = 0
-      sex_ro = np.array([person.values[columns_used_in_test[1]] == data_person.values[columns_used_in_train[1+diff]]])
-      if(sex_ro == 0): srw = 70
+      sex_ro = np.array([person.values[columns_used_in_test[1]] == data_person.values[columns_used_in_train[1 + diff]]])
+      if (sex_ro == 0): srw = 70
       arw = 2
-      age_ro = np.abs(person.values[columns_used_in_test[2]] - data_person.values[columns_used_in_train[2+diff]])
-      if(isnull(age_ro)): age_ro = 14.526497
-      sbsprw = 3
-      sb_sp_ro = np.abs(person.values[columns_used_in_test[3]] - data_person.values[columns_used_in_train[3+diff]])
+      age_ro = np.abs(person.values[columns_used_in_test[2]] - data_person.values[columns_used_in_train[2 + diff]])
+      if (isnull(age_ro)): age_ro = 14.526497
+      sbsprw = 2
+      sb_sp_ro = np.abs(person.values[columns_used_in_test[3]] - data_person.values[columns_used_in_train[3 + diff]])
       parchrw = 3
-      par_ch_ro = np.abs(person.values[columns_used_in_test[4]] - data_person.values[columns_used_in_train[4+diff]])
-      frw = 0.1
+      par_ch_ro = np.abs(person.values[columns_used_in_test[4]] - data_person.values[columns_used_in_train[4 + diff]])
+      frw = 0.05
       fare_ro = np.abs(person.values[columns_used_in_test[5]] - data_person.values[columns_used_in_train[5+diff]])
       if (isnull(fare_ro)): fare_ro = 49.693429
       erw = 0
@@ -221,14 +221,15 @@ nones = []
 # print(data.isnull().sum() )
 # print(test.isnull().sum() )
 # print(test.iloc[69, :].values[columns_used_in_test])
-h = 45
+h = 75
 
 for x in range(len(test)):
-      chances_death = np.sum([K_Epanch(ro(test.iloc[x,:], data.iloc[i, :])/h) for i in range(len(data))
-                              if data.iloc[i, 1] == 0])
-      chances_survival = np.sum([K_Epanch(ro(test.iloc[x,:], data.iloc[i, :])/h) for i in range(len(data))
-                              if data.iloc[i, 1] == 1])
-      chances = (chances_survival - chances_death)
+      ros = np.array([ro(test.iloc[x,:], data.iloc[i, :]) if data.iloc[i, 1] == 1
+                      else -1 * ro(test.iloc[x,:], data.iloc[i, :]) for i in range(len(data))])
+      ros = sorted(ros, key= lambda val: np.abs(val))
+      chances = np.sum([K_Epanch(ros[i]/np.abs(ros[h])) if ros[i] > 0 else -1 * K_Epanch(np.abs(ros[i]/ros[h]))
+                        for i in range(h)])
+
       if chances == 0:
             unknown.append(x)
       elif isnull(chances):
@@ -242,7 +243,7 @@ for x in range(len(test)):
             else res.append([test.iloc[x,0], 0])
       # res.append(1) if chances > 0.5 else res.append( 0) if chances < 0.5 else res.append(-1.0)
 
-print((unknown))
+print(np.size(unknown))
 print((nones))
 # print(sum([res[i] == -1 for i in range(len(res))]))
 print(res)
