@@ -152,22 +152,25 @@ def get_probability_of_survival(person):
 
 def ro(person, data_person):
       diff = 1
-      crw = 10
-      class_ro = np.abs(person.values[columns_used_in_test[0]] - data_person.values[columns_used_in_test[0+diff]])
-      srw = 100
-      sex_ro = np.array([person.values[columns_used_in_test[1]] == data_person.values[columns_used_in_test[1+diff]]])
-      arw = 10
-      age_ro = np.abs(person.values[columns_used_in_test[2]] - data_person.values[columns_used_in_test[2+diff]])
-      sbsprw = 2
-      sb_sp_ro = np.abs(person.values[columns_used_in_test[3]] - data_person.values[columns_used_in_test[3+diff]])
-      parchrw = 2
-      par_ch_ro = np.abs(person.values[columns_used_in_test[4]] - data_person.values[columns_used_in_test[4+diff]])
+      crw = 25
+      class_ro = np.abs(person.values[columns_used_in_test[0]] - data_person.values[columns_used_in_train[0+diff]])
+      srw = 0
+      sex_ro = np.array([person.values[columns_used_in_test[1]] == data_person.values[columns_used_in_train[1+diff]]])
+      if(sex_ro == 0): srw = 70
+      arw = 2
+      age_ro = np.abs(person.values[columns_used_in_test[2]] - data_person.values[columns_used_in_train[2+diff]])
+      if(isnull(age_ro)): age_ro = 14.526497
+      sbsprw = 3
+      sb_sp_ro = np.abs(person.values[columns_used_in_test[3]] - data_person.values[columns_used_in_train[3+diff]])
+      parchrw = 3
+      par_ch_ro = np.abs(person.values[columns_used_in_test[4]] - data_person.values[columns_used_in_train[4+diff]])
       frw = 0.1
-      fare_ro = np.abs(person.values[columns_used_in_test[5]] - data_person.values[columns_used_in_test[5+diff]])
-      erw = 0.1
-      emb_ro = np.array([person.values[columns_used_in_test[6]] == data_person.values[columns_used_in_test[6+diff]]])
-      total_ro = (class_ro * crw + sex_ro * srw + age_ro * arw + sb_sp_ro * sbsprw + par_ch_ro * parchrw + fare_ro * frw
-                  + emb_ro * erw)
+      fare_ro = np.abs(person.values[columns_used_in_test[5]] - data_person.values[columns_used_in_train[5+diff]])
+      if (isnull(fare_ro)): fare_ro = 49.693429
+      erw = 0
+      emb_ro = np.array([person.values[columns_used_in_test[6]] == data_person.values[columns_used_in_train[6+diff]]])
+      if(emb_ro == 0): erw = 3
+      total_ro = (class_ro * crw + srw + age_ro * arw + sb_sp_ro * sbsprw + par_ch_ro * parchrw + fare_ro * frw + erw)
       return total_ro
 
 def K_gauss(r):
@@ -177,7 +180,13 @@ def K_triang(r):
       return  np.abs( 1 - r) * np.array([np.abs(r) <= 1])
 
 def K_rectan(r):
-      return np.array([np.abs(r) <= 1])
+      return 1/2 * np.array([np.abs(r) <= 1])
+
+def K_Epanch(r):
+      return 3/4 * (1 - r ** 2) * np.array([np.abs(r) <= 1])
+
+def K_quadratic(r):
+      return 15/16 * (1 - r ** 2) ** 2 * np.array([np.abs(r) <= 1])
 # pers_class = 3
 # sex = 'male'
 # age = 40
@@ -209,18 +218,28 @@ def K_rectan(r):
 res = []
 unknown = []
 nones = []
+# print(data.isnull().sum() )
+# print(test.isnull().sum() )
+# print(test.iloc[69, :].values[columns_used_in_test])
+h = 45
+
 for x in range(len(test)):
-      chances = get_probability_of_survival(test.iloc[x,:])
+      chances_death = np.sum([K_Epanch(ro(test.iloc[x,:], data.iloc[i, :])/h) for i in range(len(data))
+                              if data.iloc[i, 1] == 0])
+      chances_survival = np.sum([K_Epanch(ro(test.iloc[x,:], data.iloc[i, :])/h) for i in range(len(data))
+                              if data.iloc[i, 1] == 1])
+      chances = (chances_survival - chances_death)
+      if chances == 0:
+            unknown.append(x)
+      elif isnull(chances):
+            nones.append(x)
+      # res.append([test.iloc[x,0], 1]) if chances > 0.5 else res.append([test.iloc[x,0], 0]) if chances < 0.5 else res.append(-1.0)
+      # if chances == 0.5 or isnull(chances):
+      #       chances = random.gauss(0.5,0.1)
       # if chances == 0.5:
       #       unknown.append(x)
-      # elif isnull(chances):
-      #       nones.append(x)
-      # res.append([test.iloc[x,0], 1]) if chances > 0.5 else res.append([test.iloc[x,0], 0]) if chances < 0.5 else res.append(-1.0)
-      if chances == 0.5 or isnull(chances):
-            chances = random.gauss(0.5,0.1)
-      if chances == 0.5:
-            unknown.append(x)
-      res.append([test.iloc[x,0], 1]) if chances > 0.5 else res.append([test.iloc[x,0], 0]) if chances < 0.5 else res.append(-1.0)
+      res.append([test.iloc[x,0], 1]) if chances > 0 else res.append([test.iloc[x,0], 0]) if chances < 0\
+            else res.append([test.iloc[x,0], 0])
       # res.append(1) if chances > 0.5 else res.append( 0) if chances < 0.5 else res.append(-1.0)
 
 print((unknown))
